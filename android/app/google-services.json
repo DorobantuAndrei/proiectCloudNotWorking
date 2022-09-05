@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "835290094074",
+    "firebase_url": "https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "achizitiicereale-f6819",
+    "storage_bucket": "achizitiicereale-f6819.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835290094074:android:33ecc354434e2f62bfec43",
+        "android_client_info": {
+          "package_name": "ro.fastapp.achizitii_cereale"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835290094074-5reapvt7jv68915sedm0gvdgner450jg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPVpDg1doSpF4vyNZNjk4MCRO3PRBvz7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835290094074-5reapvt7jv68915sedm0gvdgner450jg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "835290094074-ciotrim2oqifoqirvjdv3gf1oumsejar.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ro.fastapp.achizitiiCereale"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
