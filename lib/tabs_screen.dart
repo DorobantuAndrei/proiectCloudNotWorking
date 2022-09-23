@@ -1,8 +1,12 @@
 import 'package:achizitii_cereale/main.dart';
+import 'package:achizitii_cereale/providers/clientsProvider.dart';
+import 'package:achizitii_cereale/providers/furnizoriProvider.dart';
+import 'package:achizitii_cereale/providers/transactionsProvider.dart';
 import 'package:achizitii_cereale/screens/contracts_screen.dart';
 import 'package:achizitii_cereale/screens/furnizori_screen.dart';
 import 'package:achizitii_cereale/screens/transactions_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'constants.dart';
 import 'screens/clients_screen.dart';
@@ -21,7 +25,7 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   List<Map<String, Object>> _pages;
-  int _selectedPageIndex = 0;
+  int _selectedPageIndex = kSelectedPage;
 
   @override
   void initState() {
@@ -29,16 +33,19 @@ class _TabsScreenState extends State<TabsScreen> {
       {
         'page': const ClientScreen(),
         'title': 'Clienti',
+        'bottom': 'Clienti',
         'icon': Icons.people,
       },
       {
         'page': const ContractsScreen(),
         'title': 'Contracte',
+        'bottom': 'Contracte',
         'icon': Icons.book
       },
       {
         'page': const FurnizorScreen(),
         'title': 'Furnizori',
+        'bottom': 'Furnizori',
         'icon': Icons.business_outlined,
       },
       ...cereale
@@ -46,6 +53,23 @@ class _TabsScreenState extends State<TabsScreen> {
             (e) => {
               'page': TransactionsScreen(productType: e),
               'title': e.toTitleCase(),
+              // + ' - ' +
+              // (cerealeParams[e]['humidity'] != null
+              //     ? ('U ' +
+              //         cerealeParams[e]['humidity'].toStringAsFixed(0) +
+              //         ' ')
+              //     : '') +
+              // (cerealeParams[e]['foreignObjects'] != null
+              //     ? ('CS ' +
+              //         cerealeParams[e]['foreignObjects']
+              //             .toStringAsFixed(0) +
+              //         ' ')
+              //     : '') +
+              // (cerealeParams[e]['hectolitre'] != null
+              //     ? ('H ' +
+              //         cerealeParams[e]['hectolitre'].toStringAsFixed(0))
+              //     : ''),
+              'bottom': e.toTitleCase(),
               'icon': Icons.agriculture,
             },
           )
@@ -56,6 +80,12 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
   void _selectPage(int index) {
+    Provider.of<LoadClients>(context, listen: false).toggleAllContracts();
+    Provider.of<LoadClients>(context, listen: false).toggleAllTransactions();
+    Provider.of<LoadFurnizori>(context, listen: false).toggleAllTransactions();
+    Provider.of<LoadTransactions>(context, listen: false)
+        .toggleAllTransactionForPrint(false);
+
     setState(() {
       _selectedPageIndex = index;
     });
@@ -76,7 +106,7 @@ class _TabsScreenState extends State<TabsScreen> {
           .map(
             (e) => BottomNavigationBarItem(
               icon: Icon(e['icon']),
-              label: e['title'],
+              label: e['bottom'],
             ),
           )
           .toList(),

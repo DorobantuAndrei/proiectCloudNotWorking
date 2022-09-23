@@ -1,12 +1,11 @@
 import 'package:achizitii_cereale/constants.dart';
+import 'package:achizitii_cereale/main.dart';
 import 'package:achizitii_cereale/models/models.dart';
 import 'package:achizitii_cereale/providers/clientsProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/transactionsProvider.dart';
 import '../widgets/show_dialogs.dart';
-import 'transactions_screen.dart';
 
 class ClientScreen extends StatefulWidget {
   const ClientScreen({Key key}) : super(key: key);
@@ -190,6 +189,7 @@ class ClientTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = LoadClients.getClientById(id);
+    final contracts = c.contracts.reversed;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -210,7 +210,7 @@ class ClientTile extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
-                    vertical: 20,
+                    vertical: 10,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,10 +220,14 @@ class ClientTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(c.name),
+                          Text(
+                            c.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(width: 10),
                           Text(c.identifier),
-                          // const SizedBox(width: 10),
                         ],
                       ),
                       ClientOptions(c: c),
@@ -249,7 +253,7 @@ class ClientTile extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        ...c.contracts
+                        ...contracts
                             .map((e) => ContractTile(c: c, e: e))
                             .toList(),
                       ],
@@ -285,32 +289,37 @@ class ClientOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ClientOptionsIcon(
-          icon: Icons.add,
-          label: 'Contract',
-          onTap: () async {
-            await addContract(context, c);
-          },
-        ),
-        ClientOptionsIcon(
-          icon: Icons.edit_outlined,
-          label: 'Modifica',
-          onTap: () async {
-            await modifyClient(context, c);
-          },
-        ),
-        ClientOptionsIcon(
-          icon: Icons.delete_outline,
-          label: 'Sterge',
-          onTap: () async {
-            await deleteClient(context, c);
-          },
-        ),
-      ],
+    return Expanded(
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: 5,
+        // mainAxisAlignment: MainAxisAlignment.end,
+        // crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClientOptionsIcon(
+            icon: Icons.add,
+            label: 'Contract',
+            onTap: () async {
+              await addContract(context, c);
+            },
+          ),
+          ClientOptionsIcon(
+            icon: Icons.edit_outlined,
+            label: 'Modifica',
+            onTap: () async {
+              await modifyClient(context, c);
+            },
+          ),
+          ClientOptionsIcon(
+            icon: Icons.delete_outline,
+            label: 'Sterge',
+            onTap: () async {
+              await deleteClient(context, c);
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -337,55 +346,37 @@ class ContractTile extends StatelessWidget {
         children: [
           Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Container(
+                  width: 70,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 10,
+                  ),
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    color: e.active ? Colors.green : Colors.redAccent,
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  child: Text(
+                    e.active ? 'activ' : 'inactiv',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 70,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 5,
-                        horizontal: 10,
-                      ),
-                      margin: const EdgeInsets.only(right: 10),
-                      decoration: BoxDecoration(
-                        color: e.active ? Colors.green : Colors.redAccent,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5)),
-                      ),
-                      child: Text(
-                        e.active ? 'activ' : 'inactiv',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
                     if (e.number != null && e.number != '')
                       Container(
                         margin: const EdgeInsets.only(right: 10),
                         child: Text(e.number ?? '-'),
-                      ),
-                    // if (e.productType != null && e.productType != '')
-                    //   Container(
-                    //     margin: const EdgeInsets.only(right: 10),
-                    //     child: Text(e.productType ?? '-'),
-                    //   ),
-                    // Container(
-                    //   margin: const EdgeInsets.only(right: 10),
-                    //   child: Text(numberFormat.format(all ?? 0) +
-                    //       ' / ' +
-                    //       numberFormat.format(e.quantity ?? 0)),
-                    // ),
-                    if (e.price != null)
-                      Container(
-                        margin: const EdgeInsets.only(right: 10),
-                        child: Text(e.price != null
-                            ? (numberFormat.format(e.price ?? 0) + ' lei')
-                            : ''),
                       ),
                     if (e.date != null && e.date != '')
                       Container(
@@ -397,34 +388,12 @@ class ContractTile extends StatelessWidget {
                         margin: const EdgeInsets.only(right: 10),
                         child: Text(e.details ?? '-'),
                       ),
-                    Container(
-                      margin: const EdgeInsets.only(right: 20),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 5,
-                        horizontal: 10,
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Color.fromRGBO(40, 79, 70, 1),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5),
-                        ),
-                      ),
-                      child: Text(
-                        numberFormat.format(all ?? 0) +
-                            ' / ' +
-                            numberFormat.format(e.quantity ?? 0),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 ContractOptions(
                   client: c,
                   contract: e,
+                  all: all,
                 ),
               ],
             ),
@@ -436,33 +405,144 @@ class ContractTile extends StatelessWidget {
 }
 
 class ContractOptions extends StatelessWidget {
-  const ContractOptions({Key key, this.client, this.contract})
+  const ContractOptions({Key key, this.client, this.contract, this.all})
       : super(key: key);
 
   final Client client;
   final Contract contract;
+  final double all;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ClientOptionsIcon(
-          icon: Icons.edit_outlined,
-          label: 'Modifica',
-          onTap: () async {
-            await modifyContract(context, client, contract);
-          },
-        ),
-        ClientOptionsIcon(
-          icon: Icons.delete_outline,
-          label: 'Sterge',
-          onTap: () async {
-            await deleteContract(context, client, contract);
-          },
-        ),
-      ],
+    return Expanded(
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: 5,
+        children: [
+          Container(
+            width: 70,
+            margin: const EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: kAccentColor,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: Text(
+              contract.productType.toTitleCase(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ),
+          if (contract.price != null)
+            Container(
+              margin: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.symmetric(
+                vertical: 5,
+                horizontal: 10,
+              ),
+              decoration: const BoxDecoration(
+                color: kGrey,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(5),
+                ),
+              ),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                  ),
+                  children: <TextSpan>[
+                    const TextSpan(text: 'Pret: '),
+                    TextSpan(
+                      text: numberFormat.format(contract.price),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' ' + (contract.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          Container(
+            margin: const EdgeInsets.only(left: 10, right: 5),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: Colors.redAccent,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  const TextSpan(text: 'Cantitate: '),
+                  TextSpan(
+                    text: numberFormat.format(all),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const TextSpan(
+                    text: ' / ',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(
+                    text: numberFormat.format(contract.quantity),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ClientOptionsIcon(
+            icon: Icons.edit_outlined,
+            label: 'Modifica',
+            onTap: () async {
+              await modifyContract(context, client, contract);
+            },
+          ),
+          ClientOptionsIcon(
+            icon: Icons.delete_outline,
+            label: 'Sterge',
+            onTap: () async {
+              await deleteContract(context, client, contract);
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -477,22 +557,18 @@ class ClientOptionsIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(width: 5),
-        ElevatedButton.icon(
-          onPressed: () {
-            onTap();
-          },
-          icon: Icon(icon, size: 24),
-          label: Text(label),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(kAccentColor),
-          ),
+    return Container(
+      margin: const EdgeInsets.only(left: 5),
+      child: ElevatedButton.icon(
+        onPressed: () {
+          onTap();
+        },
+        icon: Icon(icon, size: 24),
+        label: Text(label),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(kAccentColor),
         ),
-      ],
+      ),
     );
   }
 }

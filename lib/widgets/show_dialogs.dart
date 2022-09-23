@@ -1,4 +1,3 @@
-import 'package:achizitii_cereale/models/product_type.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -620,6 +619,7 @@ Future<void> addContract(
   final quantityController = TextEditingController();
   bool isActive = true;
   final priceController = TextEditingController();
+  final currencyController = TextEditingController(text: 'ron');
   final dateController = TextEditingController();
   final detailsController = TextEditingController();
 
@@ -636,6 +636,7 @@ Future<void> addContract(
           price: priceController.text == ''
               ? null
               : double.parse(priceController.text),
+          currency: priceController.text == '' ? null : currencyController.text,
           date: dateController.text,
           details: detailsController.text,
           clientName: c.name,
@@ -659,9 +660,6 @@ Future<void> addContract(
   const accentColor = Color(0xffffffff);
   const backgroundColor = Color(0xffffffff);
   const errorColor = Color(0xffEF4444);
-
-  bool button1 = true;
-  bool button2 = false;
 
   return showDialog(
     context: context,
@@ -766,8 +764,10 @@ Future<void> addContract(
                         const PopupTitle(text: 'Tip produs', isRequired: true),
                         const SizedBox(height: 3),
                         Container(
+                          // width: MediaQuery.of(context).size.width * 0.4,
                           width: 250,
                           child: DropdownButton<String>(
+                            isExpanded: true,
                             value: productTypeController.text,
                             // icon: const Icon(Icons.arrow_downward),
                             elevation: 16,
@@ -857,57 +857,128 @@ Future<void> addContract(
                           activeColor: kAccentColor,
                         ),
                         // const SizedBox(height: 8),
-                        const PopupTitle(text: 'Pret'),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: priceController,
-                          validator: (value) {
-                            if (value.contains(RegExp(r'[a-z]'))) {
-                              return 'Pretul trebuie sa aiba doar cifre';
-                            }
-                            return null;
-                          },
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: accentColor,
-                            hintText: 'introdu pretul aici',
-                            hintStyle:
-                                TextStyle(color: Colors.grey.withOpacity(.75)),
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 0.0, horizontal: 20.0),
-                            border: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: primaryColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const PopupTitle(text: 'Pret'),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: priceController,
+                                    validator: (value) {
+                                      if (value.contains(RegExp(r'[a-z]'))) {
+                                        return 'Pretul trebuie sa aiba doar cifre';
+                                      }
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.number,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: accentColor,
+                                      hintText: 'introdu pretul aici',
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey.withOpacity(.75)),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 0.0, horizontal: 20.0),
+                                      border: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: primaryColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: secondaryColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                      errorBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: errorColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: primaryColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
                             ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: secondaryColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const PopupTitle(text: 'Moneda'),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: kPrimaryColor,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 0.0,
+                                      horizontal: 20.0,
+                                    ),
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      focusColor: Colors.white,
+                                      value: currencyController.text,
+                                      elevation: 16,
+                                      style:
+                                          const TextStyle(color: kAccentColor),
+                                      underline: Container(),
+                                      onChanged: (String newValue) {
+                                        currencyController.text = newValue;
+                                        setState(() {});
+                                      },
+                                      items: currencies
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
                             ),
-                            errorBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: errorColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                            ),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: primaryColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                            ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        const PopupTitle(text: 'Data'),
+
+                        const PopupTitle(text: 'Data expirare'),
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: dateController,
@@ -1051,6 +1122,8 @@ Future<void> modifyContract(
   bool isActive = contract.active;
   final priceController = TextEditingController(
       text: contract.price != null ? contract.price.toStringAsFixed(2) : '');
+  final currencyController =
+      TextEditingController(text: contract.currency ?? 'ron');
   final dateController = TextEditingController(text: contract.date ?? '');
   final detailsController = TextEditingController(text: contract.details);
 
@@ -1068,6 +1141,8 @@ Future<void> modifyContract(
           price: priceController.text == ''
               ? null
               : double.parse(priceController.text),
+          currency:
+              currencyController.text == '' ? null : currencyController.text,
           date: dateController.text,
           details: detailsController.text,
           clientName: client.name,
@@ -1289,57 +1364,130 @@ Future<void> modifyContract(
                           activeColor: kAccentColor,
                         ),
                         // const SizedBox(height: 8),
-                        const PopupTitle(text: 'Pret'),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: priceController,
-                          validator: (value) {
-                            if (value.contains(RegExp(r'[a-z]'))) {
-                              return 'Pretul trebuie sa aiba doar cifre';
-                            }
-                            return null;
-                          },
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: accentColor,
-                            hintText: 'introdu pretul aici',
-                            hintStyle:
-                                TextStyle(color: Colors.grey.withOpacity(.75)),
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 0.0, horizontal: 20.0),
-                            border: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: primaryColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const PopupTitle(text: 'Pret'),
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: priceController,
+                                    validator: (value) {
+                                      if (value.contains(RegExp(r'[a-z]'))) {
+                                        return 'Pretul trebuie sa aiba doar cifre';
+                                      }
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.number,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: accentColor,
+                                      hintText: 'introdu pretul aici',
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey.withOpacity(.75)),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 0.0, horizontal: 20.0),
+                                      border: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: primaryColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: secondaryColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                      errorBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: errorColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: primaryColor, width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
                             ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: secondaryColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const PopupTitle(text: 'Moneda'),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: kPrimaryColor,
+                                        width: 1,
+                                      ),
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 0.0,
+                                      horizontal: 20.0,
+                                    ),
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      focusColor: Colors.white,
+                                      value: currencyController.text,
+                                      elevation: 16,
+                                      style:
+                                          const TextStyle(color: kAccentColor),
+                                      // underline: Container(
+                                      //     height: 2, color: kPrimaryColor),
+                                      underline: Container(),
+                                      onChanged: (String newValue) {
+                                        currencyController.text = newValue;
+                                        setState(() {});
+                                      },
+                                      items: currencies
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style: const TextStyle(
+                                                color: Colors.black),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
                             ),
-                            errorBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: errorColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                            ),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: primaryColor, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10.0)),
-                            ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        const PopupTitle(text: 'Data'),
+
+                        const PopupTitle(text: 'Data expirare'),
                         const SizedBox(height: 8),
                         TextFormField(
                           controller: dateController,

@@ -1,6 +1,3 @@
-import 'package:achizitii_cereale/models/product_type.dart';
-import 'package:intl/intl.dart';
-
 // CONTRACT
 // firma (nn)
 // numar 5/10.08.2022 (nn)
@@ -21,9 +18,14 @@ class Contract {
   String productType; // nn
   double quantity; // nn
   bool active; // nn (true / false)
+
   double price;
+  String currency;
+
   String date;
   String details;
+
+  bool showTransactions = false;
 
   Contract({
     this.id, // nn
@@ -33,6 +35,7 @@ class Contract {
     this.quantity, // nn
     this.active, // nn (true / false
     this.price,
+    this.currency,
     this.date,
     this.details,
     // doar pt filtrare
@@ -126,10 +129,20 @@ class MyTransaction {
 
   String productType; // nn
   double quantity; // nn
+
   double price;
+  double penalizedPrice;
+  String currency;
+
+  double humidity;
+  double foreignObjects;
+  double hectolitre;
+
   String details;
 
   String date;
+
+  bool selectedForPrint = false;
 
   MyTransaction({
     this.id,
@@ -140,6 +153,11 @@ class MyTransaction {
     this.productType,
     this.quantity,
     this.price,
+    this.penalizedPrice,
+    this.currency,
+    this.humidity,
+    this.foreignObjects,
+    this.hectolitre,
     this.details,
     this.date,
   });

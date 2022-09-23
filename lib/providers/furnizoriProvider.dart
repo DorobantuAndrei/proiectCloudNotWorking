@@ -50,6 +50,13 @@ class LoadFurnizori with ChangeNotifier {
     return _furnizori.firstWhere((e) => e.id == id, orElse: (() => null));
   }
 
+  void toggleAllTransactions() {
+    _furnizori.forEach((e) {
+      e.showTransactions = false;
+    });
+    notifyListeners();
+  }
+
   void toggleTransactions(String id, bool status) {
     _furnizori
         .firstWhere((e) => e.id == id, orElse: (() => null))

@@ -1,4 +1,3 @@
-import 'package:achizitii_cereale/models/product_type.dart';
 import 'package:achizitii_cereale/providers/furnizoriProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

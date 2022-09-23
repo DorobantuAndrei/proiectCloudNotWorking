@@ -114,8 +114,14 @@ class LoadTransactions with ChangeNotifier {
               productType: transactionData['productType'],
               quantity: transactionData['quantity'],
               price: transactionData['price'],
+              penalizedPrice:
+                  type == 'intrare' ? transactionData['penalizedPrice'] : null,
+              currency: transactionData['currency'],
               details: transactionData['details'],
               date: transactionData['date'],
+              humidity: transactionData['humidity'],
+              foreignObjects: transactionData['foreignObjects'],
+              hectolitre: transactionData['hectolitre'],
             ));
           } catch (e) {
             print(e);
@@ -148,14 +154,120 @@ class LoadTransactions with ChangeNotifier {
           'productType': t.productType,
           'quantity': t.quantity,
           'price': t.price,
+          'penalizedPrice': t.penalizedPrice,
+          'currency': t.currency,
           'details': t.details,
           'date': t.date,
+          'humidity': t.humidity,
+          'foreignObjects': t.foreignObjects,
+          'hectolitre': t.hectolitre,
         }));
     var extractedData = json.decode(response.body) as Map<dynamic, dynamic>;
     t.id = extractedData['name'];
     _transactions.add(t);
     await changeStock(t.productType, t.quantity, t.type == 'intrare');
     print('add transaction');
+    notifyListeners();
+  }
+
+  Future<void> modifyTransaction(
+    MyTransaction t,
+    double oldQuantity,
+    String oldType,
+  ) async {
+    final url = Uri.parse('$database/$databaseTransactions/${t.id}.json');
+    var response = await http.patch(url,
+        body: json.encode({
+          'type': t.type,
+          'clientId': t.type == 'intrare' ? null : t.clientId,
+          'contractId': t.type == 'intrare' ? null : t.contractId,
+          'furnizorId': t.type == 'intrare' ? t.furnizorId : null,
+          'productType': t.productType,
+          'quantity': t.quantity,
+          'price': t.price,
+          'penalizedPrice': t.penalizedPrice,
+          'currency': t.currency,
+          'details': t.details,
+          'date': t.date,
+          'humidity': t.humidity,
+          'foreignObjects': t.foreignObjects,
+          'hectolitre': t.hectolitre,
+        }));
+
+    if (t.quantity != oldQuantity) {
+      if (oldType == 'intrare' && t.type == 'intrare') {
+        if (t.quantity > oldQuantity) {
+          await changeStock(t.productType, t.quantity - oldQuantity, true);
+        } else {
+          await changeStock(t.productType, oldQuantity - t.quantity, false);
+        }
+      } else if (oldType == 'iesire' && t.type == 'iesire') {
+        if (t.quantity > oldQuantity) {
+          await changeStock(t.productType, t.quantity - oldQuantity, false);
+        } else {
+          await changeStock(t.productType, oldQuantity - t.quantity, true);
+        }
+      } else if (oldType == 'intrare' && t.type == 'iesire') {
+        await changeStock(t.productType, oldQuantity + t.quantity, false);
+      } else if (oldType == 'iesire' && t.type == 'intrare') {
+        await changeStock(t.productType, oldQuantity + t.quantity, true);
+      }
+    } else {
+      if (oldType == 'intrare' && t.type == 'iesire') {
+        await changeStock(t.productType, oldQuantity + t.quantity, false);
+      } else if (oldType == 'iesire' && t.type == 'intrare') {
+        await changeStock(t.productType, oldQuantity + t.quantity, true);
+      }
+    }
+
+    // old: intrare
+    // new: intrare
+    // => daca quantity > oldQuantity => adauga diferenta
+    // => daca quantity < oldQuantity => scade diferenta
+
+    // old: iesire
+    // new: iesire
+    // => daca quantity > oldQuantity => scade diferenta
+    // => daca quantity < oldQuantity => adauga diferenta
+
+    // old: intrare
+    // new: iesire
+    // => scad oldQuantity si scad quantity
+
+    // old: iesire
+    // new: intrare
+    // => adaug oldQuantity si adaug quantity
+
+    Map<String, double> params = cerealeParams[t.productType];
+
+    _transactions.firstWhere((e) => e.id == t.id).type = t.type;
+    _transactions.firstWhere((e) => e.id == t.id).clientId =
+        t.type == 'intrare' ? null : t.clientId;
+    _transactions.firstWhere((e) => e.id == t.id).contractId =
+        t.type == 'intrare' ? null : t.contractId;
+    _transactions.firstWhere((e) => e.id == t.id).furnizorId =
+        t.type == 'intrare' ? t.furnizorId : null;
+    _transactions.firstWhere((e) => e.id == t.id).productType = t.productType;
+    _transactions.firstWhere((e) => e.id == t.id).quantity = t.quantity;
+    _transactions.firstWhere((e) => e.id == t.id).price = t.price;
+    _transactions.firstWhere((e) => e.id == t.id).penalizedPrice =
+        t.penalizedPrice;
+    _transactions.firstWhere((e) => e.id == t.id).currency = t.currency;
+    _transactions.firstWhere((e) => e.id == t.id).details = t.details;
+    _transactions.firstWhere((e) => e.id == t.id).date = t.date;
+
+    _transactions.firstWhere((e) => e.id == t.id).humidity =
+        (t.type == 'intrare' && params['humidity'] != null) ? t.humidity : null;
+    _transactions.firstWhere((e) => e.id == t.id).foreignObjects =
+        (t.type == 'intrare' && params['foreignObjects'] != null)
+            ? t.foreignObjects
+            : null;
+    _transactions.firstWhere((e) => e.id == t.id).hectolitre =
+        (t.type == 'intrare' && params['hectolitre'] != null)
+            ? t.hectolitre
+            : null;
+
+    print('modify transaction');
     notifyListeners();
   }
 
@@ -169,80 +281,22 @@ class LoadTransactions with ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> modifyFurnizor({
-  //   String id,
-  //   String name,
-  //   String identifier,
-  //   String details,
-  // }) async {
-  //   final url = Uri.parse('$database/$databaseFurnizori/$id.json');
-  //   var response = await http.patch(url,
-  //       body: json.encode({
-  //         'name': name,
-  //         'identifier': identifier,
-  //         'details': details,
-  //       }));
-  //   _furnizori.firstWhere((e) => e.id == id).name = name;
-  //   _furnizori.firstWhere((e) => e.id == id).identifier = identifier;
-  //   _furnizori.firstWhere((e) => e.id == id).details = details;
-  //   print('modify furnizor');
-  //   notifyListeners();
-  // }
+  void toggleTransactionForPrint(String id, bool value) {
+    _transactions.firstWhere((e) => e.id == id).selectedForPrint = value;
+    notifyListeners();
+  }
 
-  // Future<void> addContract({String id, Contract contract}) async {
-  //   final url = Uri.parse('$database/$databaseClients/$id/contracts.json');
-  //   var response = await http.post(url,
-  //       body: json.encode({
-  //         'clientId': contract.clientId,
-  //         'number': contract.number,
-  //         'productType': contract.productType,
-  //         'quantity': contract.quantity,
-  //         'active': contract.active,
-  //         'price': contract.price,
-  //         'date': contract.date.toIso8601String(),
-  //         'details': contract.details,
-  //       }));
-  //   var extractedData = json.decode(response.body) as Map<dynamic, dynamic>;
-  //   contract.id = extractedData['name'];
-  //   _clients.firstWhere((e) => e.id == id).contracts.add(contract);
-  //   print('add contract');
-  //   notifyListeners();
-  // }
+  void toggleAllTransactionForPrint(bool value) {
+    _transactions
+        // .where((element) => element.furnizorId == id)
+        .forEach(((element) => element.selectedForPrint = false));
+    notifyListeners();
+  }
 
-  // Future<void> deleteContract(String clientId, String contractId) async {
-  //   final url = Uri.parse(
-  //       '$database/$databaseClients/$clientId/contracts/$contractId.json');
-  //   var response = await http.delete(url);
-  //   _clients
-  //       .firstWhere((e) => e.id == clientId)
-  //       .contracts
-  //       .removeWhere((e) => e.id == contractId);
-  //   print('delete contract');
-  //   notifyListeners();
-  // }
-
-  // Future<void> modifyContract({
-  //   String id,
-  //   Contract contract,
-  // }) async {
-  //   final url = Uri.parse(
-  //       '$database/$databaseClients/$id/contracts/${contract.id}.json');
-  //   var response = await http.patch(url,
-  //       body: json.encode({
-  //         'clientId': contract.clientId,
-  //         'number': contract.number,
-  //         'productType': contract.productType,
-  //         'quantity': contract.quantity,
-  //         'active': contract.active,
-  //         'price': contract.price,
-  //         'date': contract.date.toIso8601String(),
-  //         'details': contract.details,
-  //       }));
-  //   _clients.firstWhere((e) => e.id == id).contracts[_clients
-  //       .firstWhere((e) => e.id == id)
-  //       .contracts
-  //       .indexWhere((e) => e.id == contract.id)] = contract;
-  //   print('modify contract');
-  //   notifyListeners();
-  // }
+  void toggleAllTransactionForPrintForTx(String id, bool value) {
+    _transactions
+        .where((element) => element.furnizorId == id)
+        .forEach(((element) => element.selectedForPrint = value));
+    notifyListeners();
+  }
 }

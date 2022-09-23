@@ -9,6 +9,8 @@ const String databaseFurnizori = 'furnizori';
 const String databaseTransactions = 'transactions';
 const String databaseStock = 'cereale';
 
+const int kSelectedPage = 3;
+
 const String database =
     'https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app';
 const String databaseFunctions = "";
@@ -16,14 +18,23 @@ const String databaseFunctions = "";
 const String kUrlTerms = 'https://pages.flycricket.io/bella-italia/terms.html';
 const String kApiKey = 'AIzaSyAsvPoOW6q1ucY4BL0DobJd80oAQrclZbA';
 
-// const Color kPrimaryColor = Color.fromRGBO(7, 113, 52, 1);
-// const Color kAccentColor = Color.fromARGB(255, 12, 180, 82);
-
 NumberFormat numberFormat = NumberFormat("#,##0.00", "ro_RO");
 
 const Color kPrimaryColor = Color.fromRGBO(6, 70, 53, 1);
 const Color kAccentColor = Color.fromRGBO(81, 146, 89, 1);
-// const Color kAccentColor = Color.fromRGBO(240, 187, 98, 1);
+const Color kGrey = Color.fromARGB(255, 150, 168, 173);
+
+Color getColor(Set<MaterialState> states) {
+  const Set<MaterialState> interactiveStates = <MaterialState>{
+    MaterialState.pressed,
+    MaterialState.hovered,
+    MaterialState.focused,
+  };
+  if (states.any(interactiveStates.contains)) {
+    return kPrimaryColor;
+  }
+  return kAccentColor;
+}
 
 const List<String> cereale = [
   'grau',
@@ -32,4 +43,43 @@ const List<String> cereale = [
   'soia',
   'rapita',
   'orz',
+];
+
+Map<String, Map<String, double>> cerealeParams = {
+  'grau': {
+    'humidity': 14.0,
+    'foreignObjects': 2.0,
+    'hectolitre': 77.0,
+  },
+  'porumb': {
+    'humidity': 14.0,
+    'foreignObjects': null,
+    'hectolitre': null,
+  },
+  'floare': {
+    'humidity': 9.0,
+    'foreignObjects': 2.0,
+    'hectolitre': null,
+  },
+  'soia': {
+    'humidity': 12.0,
+    'foreignObjects': 2.0,
+    'hectolitre': null,
+  },
+  'rapita': {
+    'humidity': 9.0,
+    'foreignObjects': 2.0,
+    'hectolitre': null,
+  },
+  'orz': {
+    'humidity': 14.0,
+    'foreignObjects': 2.0,
+    'hectolitre': 62.0,
+  },
+};
+
+const List<String> currencies = [
+  'ron',
+  'usd',
+  'eur',
 ];

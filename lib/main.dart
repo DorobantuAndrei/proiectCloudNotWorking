@@ -1,3 +1,4 @@
+import 'package:achizitii_cereale/intermediary.dart';
 import 'package:achizitii_cereale/providers/furnizoriProvider.dart';
 import 'package:achizitii_cereale/providers/transactionsProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -80,7 +81,7 @@ class App extends StatelessWidget {
           unselectedWidgetColor: Colors.white,
           fontFamily: 'OpenSans',
         ),
-        home: const FirebaseRealtimeDatabase(),
+        home: const Intermediary(),
       ),
     );
   }

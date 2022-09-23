@@ -46,6 +46,44 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final stock = Provider.of<LoadTransactions>(context, listen: true)
         .getStockByType(widget.productType);
 
+    final clients = Provider.of<LoadClients>(context, listen: true).clients;
+    final furnizori =
+        Provider.of<LoadFurnizori>(context, listen: true).furnizori;
+
+    final tx1 = transactions
+        .where((c) => (c.productType == widget.productType))
+        .map((c) => TransactionTile(
+              id: c.id,
+              from: 'tranzactions',
+            ))
+        .toList();
+    final tx2 = transactions
+        .where((c) => ((c.type
+                    .toLowerCase()
+                    .contains(searchController.text.toLowerCase()) ||
+                (c.type == 'intrare'
+                    ? furnizori.any((fur) => (fur.name
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()) &&
+                        fur.id == c.furnizorId))
+                    : clients.any((cli) => (cli.name
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()) &&
+                        cli.id == c.clientId)))) &&
+            c.productType == widget.productType))
+        .map((c) => TransactionTile(id: c.id, from: 'tranzactions'))
+        .toList();
+
+    print('refresh');
+
+    tx2.forEach(((element) {
+      var xx = LoadTransactions.getTransactionById(element.id);
+      if (xx.furnizorId != null) {
+        var furnizor = LoadFurnizori.getFurnizorById(xx.furnizorId);
+        print(furnizor.name);
+      }
+    }));
+
     return Container(
       width: MediaQuery.of(context).size.width - 40,
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -60,30 +98,44 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             stock: stock,
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (searchController.text == '')
-                    ...transactions
-                        .where((c) => (c.productType == widget.productType))
-                        .map((c) => TransactionTile(
-                              id: c.id,
-                              from: 'tranzactions',
-                            ))
-                        .toList()
-                  else if (searchController.text != '')
-                    ...transactions
-                        .where((c) => ((c.type.toLowerCase().contains(
-                                searchController.text.toLowerCase())) &&
-                            c.productType == widget.productType))
-                        .map((c) =>
-                            TransactionTile(id: c.id, from: 'tranzactions'))
-                        .toList(),
-                ],
-              ),
-            ),
+            child: (searchController.text == '')
+                ?
+                // ...transactions
+                //     .where((c) => (c.productType == widget.productType))
+                //     .map((c) => TransactionTile(
+                //           id: c.id,
+                //           from: 'tranzactions',
+                //         ))
+                //     .toList()
+                ListView.builder(
+                    itemCount: tx1.length,
+                    itemBuilder: (context, index) {
+                      return tx1[index];
+                    },
+                  )
+                :
+                //  (searchController.text != '')
+                // ...transactions
+                //     .where((c) => ((c.type.toLowerCase().contains(
+                //                 searchController.text.toLowerCase()) ||
+                //             (c.type == 'intrare'
+                //                 ? furnizori.any((fur) => fur.name
+                //                     .toLowerCase()
+                //                     .contains(searchController.text
+                //                         .toLowerCase()))
+                //                 : clients.any((cli) => cli.name
+                //                     .toLowerCase()
+                //                     .contains(searchController.text
+                //                         .toLowerCase())))) &&
+                //         c.productType == widget.productType))
+                //     .map((c) => TransactionTile(id: c.id, from: 'tranzactions'))
+                //     .toList(),
+                ListView.builder(
+                    itemCount: tx2.length,
+                    itemBuilder: (context, index) {
+                      return tx2[index];
+                    },
+                  ),
           ),
         ],
       ),
@@ -254,187 +306,328 @@ class TransactionTile extends StatelessWidget {
       furnizor = LoadFurnizori.getFurnizorById(t.furnizorId);
     } else {
       contract = LoadClients.getContractById(t.clientId, t.contractId);
-      final transactions = Provider.of<LoadTransactions>(context, listen: true)
-          .transactions
-          .where((e) => e.contractId == contract.id);
-      double all = 0;
-      transactions.forEach((element) {
-        all += element.quantity;
-      });
-      quantity = contract.quantity - all;
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width - 40,
-          margin: const EdgeInsets.only(bottom: 10),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Material(
-              color: Colors.grey[350],
-              child: InkWell(
-                // onTap: () {
-                //   // print('here');
-                //   // Provider.of<LoadFurnizori>(context, listen: false)
-                //   //     .toggleTransactions(f.id, f.showTransactions);
-                // },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              // flex: 1,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  if (from == 'furnizori')
-                                    Container(
-                                      width: 70,
-                                      margin: const EdgeInsets.only(right: 10),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 5,
-                                        horizontal: 10,
-                                      ),
-                                      decoration: const BoxDecoration(
-                                        color: kAccentColor,
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(5),
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width - 40,
+            margin: const EdgeInsets.only(bottom: 10),
+            child: ClipRRect(
+              borderRadius: (from == 'contracts' || from == 'furnizori')
+                  ? BorderRadius.circular(0)
+                  : BorderRadius.circular(10),
+              child: Material(
+                color: (from == 'contracts' || from == 'furnizori')
+                    ? Colors.grey[200]
+                    : Colors.grey[350],
+                child: InkWell(
+                  // onTap: () {
+                  //   // print('here');
+                  //   // Provider.of<LoadFurnizori>(context, listen: false)
+                  //   //     .toggleTransactions(f.id, f.showTransactions);
+                  // },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal:
+                          (from == 'contracts' || from == 'furnizori') ? 0 : 20,
+                      vertical:
+                          (from == 'contracts' || from == 'furnizori') ? 0 : 10,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                // flex: 1,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (from == 'furnizori')
+                                      Container(
+                                        width: 70,
+                                        margin:
+                                            const EdgeInsets.only(right: 10),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 5,
+                                          horizontal: 10,
+                                        ),
+                                        decoration: const BoxDecoration(
+                                          color: kAccentColor,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(5),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          t.productType,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
-                                      child: Text(
-                                        t.productType,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.white,
+                                    if (from != 'contracts' &&
+                                        from != 'furnizori')
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                            right:
+                                                from == 'furnizori' ? 10 : 0),
+                                        width: from == 'furnizori' ? null : 250,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (isIntrare && furnizor != null)
+                                              Text(furnizor.name),
+                                            if (!isIntrare && contract != null)
+                                              Text(contract.clientName +
+                                                  ' - ' +
+                                                  contract.number),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                        right: from == 'furnizori' ? 10 : 0),
-                                    width: from == 'furnizori' ? null : 250,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (isIntrare) Text(furnizor.name),
-                                        if (!isIntrare)
-                                          Text(contract.clientName +
-                                              ' - ' +
-                                              contract.number),
-                                        // if (!isIntrare)
-                                        //   const SizedBox(height: 3),
-                                        // if (!isIntrare)
-                                        //   Text(numberFormat.format(
-                                        //           contract.quantity -
-                                        //               quantity) +
-                                        //       ' / ' +
-                                        //       numberFormat
-                                        //           .format(contract.quantity)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              // flex: 2,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Container(
-                                  //   padding: const EdgeInsets.symmetric(
-                                  //     vertical: 5,
-                                  //     horizontal: 10,
-                                  //   ),
-                                  //   decoration: BoxDecoration(
-                                  //     // color: Color.fromRGBO(40, 79, 70, 1),
-                                  //     color: isIntrare
-                                  //         ? Color.fromRGBO(40, 79, 70, 1)
-                                  //         : Colors.redAccent,
-                                  //     borderRadius: const BorderRadius.all(
-                                  //       Radius.circular(5),
-                                  //     ),
-                                  //   ),
-                                  //   child: RichText(
-                                  //     text: TextSpan(
-                                  //       style: const TextStyle(
-                                  //         fontSize: 14,
-                                  //         fontWeight: FontWeight.normal,
-                                  //         color: Colors.white,
-                                  //       ),
-                                  //       children: <TextSpan>[
-                                  //         TextSpan(
-                                  //             text: 'Cantitate: ' +
-                                  //                 (isIntrare ? '+' : '-')),
-                                  //         TextSpan(
-                                  //           text:
-                                  //               numberFormat.format(t.quantity),
-                                  //           style: const TextStyle(
-                                  //             color: Colors.white,
-                                  //             fontWeight: FontWeight.bold,
-                                  //           ),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  if (t.date != null && t.date != '')
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 10),
-                                      child: Text(t.date),
-                                    ),
-                                ],
+                              Container(
+                                // flex: 2,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    if (t.date != null && t.date != '')
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: Text(t.date),
+                                      ),
+                                    if (t.details != null && t.details != '')
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: Text(t.details),
+                                      ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      ClientOptions(
-                        t: t,
-                        isIntrare: isIntrare,
-                      ),
-                    ],
+                        ClientOptions(
+                          t: t,
+                          isIntrare: isIntrare,
+                          from: from,
+                          c: contract,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 class ClientOptions extends StatelessWidget {
-  const ClientOptions({Key key, this.t, this.isIntrare}) : super(key: key);
+  const ClientOptions({Key key, this.t, this.isIntrare, this.from, this.c})
+      : super(key: key);
 
   final MyTransaction t;
   final bool isIntrare;
+  final String from;
+  final Contract c;
 
   @override
   Widget build(BuildContext context) {
+    Map<String, double> params = cerealeParams[t.productType];
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        if (t.price != null)
+          Container(
+            margin: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: kGrey,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  const TextSpan(text: 'Pret: '),
+                  TextSpan(
+                    text: numberFormat.format(t.price),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (t.type == 'iesire' && c.currency != null)
+                    TextSpan(
+                      text: ' ' + (c.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (t.currency != null)
+                    TextSpan(
+                      text: ' ' + (t.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        if (t.type == 'intrare' && from != 'contracts')
+          Container(
+            margin: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: kGrey,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  const TextSpan(text: 'Pret penalizat: '),
+                  TextSpan(
+                    text: t.penalizedPrice != null
+                        ? numberFormat.format(t.penalizedPrice ?? 0)
+                        : '-',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (t.currency != null)
+                    TextSpan(
+                      text: ' ' + (t.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        if (t.type == 'intrare' && from != 'contracts')
+          Container(
+            margin: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: kGrey,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  if (params['humidity'] != null) const TextSpan(text: 'U '),
+                  if (t.humidity != null)
+                    TextSpan(
+                      text: t.humidity.toStringAsFixed(0) + '%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (params['humidity'] != null)
+                    const TextSpan(
+                      text: '-',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (params['foreignObjects'] != null)
+                    const TextSpan(text: ' | CS '),
+                  if (t.foreignObjects != null)
+                    TextSpan(
+                      text: t.foreignObjects.toStringAsFixed(0) + '%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (params['foreignObjects'] != null)
+                    const TextSpan(
+                      text: '-',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (params['hectolitre'] != null)
+                    const TextSpan(text: ' | H '),
+                  if (t.hectolitre != null)
+                    TextSpan(
+                      text: t.hectolitre.toStringAsFixed(0) + '%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (params['hectolitre'] != null)
+                    const TextSpan(
+                      text: '-',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
         Container(
           margin: const EdgeInsets.only(right: 20),
           padding: const EdgeInsets.symmetric(
@@ -488,99 +681,6 @@ class ClientOptions extends StatelessWidget {
     );
   }
 }
-
-// class ContractTile extends StatelessWidget {
-//   const ContractTile({Key key, this.e, this.c}) : super(key: key);
-
-//   final Contract e;
-//   final Client c;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       margin: const EdgeInsets.symmetric(vertical: 10),
-//       child: Column(
-//         children: [
-//           Container(
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               crossAxisAlignment: CrossAxisAlignment.center,
-//               children: [
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.start,
-//                   crossAxisAlignment: CrossAxisAlignment.center,
-//                   children: [
-//                     Text(e.id),
-//                     const SizedBox(width: 10),
-//                     Text(e.number),
-//                     const SizedBox(width: 10),
-//                     Text(e.productType),
-//                     const SizedBox(width: 10),
-//                     Text(e.quantity.toStringAsFixed(0)),
-//                     const SizedBox(width: 10),
-//                     Container(
-//                       padding: const EdgeInsets.symmetric(
-//                         vertical: 5,
-//                         horizontal: 10,
-//                       ),
-//                       decoration: const BoxDecoration(
-//                         color: Colors.green,
-//                         borderRadius: BorderRadius.all(Radius.circular(5)),
-//                       ),
-//                       child: Text(
-//                         e.active ? 'activ' : 'inactiv',
-//                         style: const TextStyle(
-//                           color: Colors.white,
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 // ContractOptions(
-//                 //   client: c,
-//                 //   contract: e,
-//                 // ),
-//               ],
-//             ),
-//           ),
-//           // const Divider(color: Colors.grey),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// class ContractOptions extends StatelessWidget {
-//   const ContractOptions({Key key, this.client, this.contract})
-//       : super(key: key);
-
-//   final Client client;
-//   final Contract contract;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.end,
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       children: [
-//         ClientOptionsIcon(
-//           icon: Icons.edit_outlined,
-//           label: 'Modifica',
-//           onTap: () async {
-//             await modifyContract(context, client, contract);
-//           },
-//         ),
-//         ClientOptionsIcon(
-//           icon: Icons.delete_outline,
-//           label: 'Sterge',
-//           onTap: () async {
-//             await deleteContract(context, client, contract);
-//           },
-//         ),
-//       ],
-//     );
-//   }
-// }
 
 class ClientOptionsIcon extends StatelessWidget {
   const ClientOptionsIcon({Key key, this.icon, this.onTap, this.label})

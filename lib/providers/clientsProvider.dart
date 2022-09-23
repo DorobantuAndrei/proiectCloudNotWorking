@@ -31,6 +31,7 @@ class LoadClients with ChangeNotifier {
 
   Future<void> getClients() async {
     List<Client> clients = [];
+
     await FirebaseDatabase.instance.ref().child('clients').once().then((value) {
       final extractedData = value.snapshot.value as Map;
       if (extractedData != null) {
@@ -48,6 +49,7 @@ class LoadClients with ChangeNotifier {
                   quantity: contractData['quantity'],
                   active: contractData['active'],
                   price: contractData['price'],
+                  currency: contractData['currency'],
                   date: contractData['date'],
                   details: contractData['details'],
                   clientName: clientData['name'],
@@ -85,10 +87,18 @@ class LoadClients with ChangeNotifier {
     Client c =
         _clients.firstWhere((e) => e.id == clientId, orElse: (() => null));
     if (c != null) {
-      return c.contracts.firstWhere((e) => e.id == contractId);
+      return c.contracts
+          .firstWhere((e) => e.id == contractId, orElse: (() => null));
     } else {
       return null;
     }
+  }
+
+  void toggleAllContracts() {
+    _clients.forEach((e) {
+      e.showContracts = false;
+    });
+    notifyListeners();
   }
 
   void toggleContracts(String id, bool status) {
@@ -96,6 +106,30 @@ class LoadClients with ChangeNotifier {
         !status;
     _clients.forEach((e) {
       if (e.id != id) e.showContracts = false;
+    });
+    notifyListeners();
+  }
+
+  void toggleAllTransactions() {
+    _clients.forEach((e) {
+      e.contracts.forEach((element) {
+        element.showTransactions = false;
+      });
+    });
+    notifyListeners();
+  }
+
+  void toggleTransactions(String clientId, String contractId, bool status) {
+    _clients
+        .firstWhere((e) => e.id == clientId, orElse: (() => null))
+        .contracts
+        .firstWhere((e) => e.id == contractId)
+        .showTransactions = !status;
+
+    _clients.forEach((e) {
+      e.contracts.forEach((element) {
+        if (element.id != contractId) element.showTransactions = false;
+      });
     });
     notifyListeners();
   }
@@ -158,6 +192,7 @@ class LoadClients with ChangeNotifier {
           'quantity': contract.quantity,
           'active': contract.active,
           'price': contract.price,
+          'currency': contract.currency,
           'date': contract.date,
           'details': contract.details,
         }));
@@ -194,6 +229,7 @@ class LoadClients with ChangeNotifier {
           'quantity': contract.quantity,
           'active': contract.active,
           'price': contract.price,
+          'currency': contract.currency,
           'date': contract.date,
           'details': contract.details,
         }));
