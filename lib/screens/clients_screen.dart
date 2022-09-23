@@ -36,7 +36,10 @@ class _ClientScreenState extends State<ClientScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final clients = Provider.of<LoadClients>(context, listen: true).clients;
+    final clients = Provider.of<LoadClients>(context, listen: true)
+        .clients
+        .reversed
+        .toList();
 
     return Container(
       width: MediaQuery.of(context).size.width - 40,
@@ -189,7 +192,7 @@ class ClientTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = LoadClients.getClientById(id);
-    final contracts = c.contracts.reversed;
+    final contracts = c.contracts.reversed.toList();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,

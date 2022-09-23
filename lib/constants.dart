@@ -9,7 +9,7 @@ const String databaseFurnizori = 'furnizori';
 const String databaseTransactions = 'transactions';
 const String databaseStock = 'cereale';
 
-const int kSelectedPage = 3;
+const int kSelectedPage = 0;
 
 const String database =
     'https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app';

@@ -44,15 +44,15 @@ class _ContractsScreenState extends State<ContractsScreen> {
         Provider.of<LoadClients>(context, listen: true).contracts;
     contracts.sort(((a, b) => a.active ? 0 : 1));
 
-    List<String> options = ['toate', 'active', 'inactive'];
-    List<Container> selectArray = options
-        .map(
-          (e) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Text(e, style: const TextStyle(fontSize: 14)),
-          ),
-        )
-        .toList();
+    // List<String> options = ['toate', 'active', 'inactive'];
+    // List<Container> selectArray = options
+    //     .map(
+    //       (e) => Container(
+    //         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    //         child: Text(e, style: const TextStyle(fontSize: 14)),
+    //       ),
+    //     )
+    //     .toList();
 
     return Container(
       width: MediaQuery.of(context).size.width - 40,

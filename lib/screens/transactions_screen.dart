@@ -74,15 +74,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         .map((c) => TransactionTile(id: c.id, from: 'tranzactions'))
         .toList();
 
-    print('refresh');
+    // print('refresh');
 
-    tx2.forEach(((element) {
-      var xx = LoadTransactions.getTransactionById(element.id);
-      if (xx.furnizorId != null) {
-        var furnizor = LoadFurnizori.getFurnizorById(xx.furnizorId);
-        print(furnizor.name);
-      }
-    }));
+    // tx2.forEach(((element) {
+    //   var xx = LoadTransactions.getTransactionById(element.id);
+    //   if (xx.furnizorId != null) {
+    //     var furnizor = LoadFurnizori.getFurnizorById(xx.furnizorId);
+    //     print(furnizor.name);
+    //   }
+    // }));
 
     return Container(
       width: MediaQuery.of(context).size.width - 40,
@@ -507,7 +507,9 @@ class ClientOptions extends StatelessWidget {
               ),
             ),
           ),
-        if (t.type == 'intrare' && from != 'contracts')
+        if (t.type == 'intrare' &&
+            from != 'contracts' &&
+            t.penalizedPrice != null)
           Container(
             margin: const EdgeInsets.only(right: 20),
             padding: const EdgeInsets.symmetric(
