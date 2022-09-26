@@ -665,6 +665,7 @@ class TransactionTileV2 extends StatelessWidget {
                       FurnizorOptionsV2(
                         t: t,
                         isIntrare: isIntrare,
+                        c: contract,
                       ),
                     ],
                   ),
@@ -679,13 +680,17 @@ class TransactionTileV2 extends StatelessWidget {
 }
 
 class FurnizorOptionsV2 extends StatelessWidget {
-  const FurnizorOptionsV2({Key key, this.t, this.isIntrare}) : super(key: key);
+  const FurnizorOptionsV2({Key key, this.t, this.isIntrare, this.c})
+      : super(key: key);
 
   final MyTransaction t;
   final bool isIntrare;
+  final Contract c;
 
   @override
   Widget build(BuildContext context) {
+    Map<String, double> params = cerealeParams[t.productType];
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -719,13 +724,143 @@ class FurnizorOptionsV2 extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const TextSpan(
-                    text: ' lei',
-                    style: TextStyle(
+                  if (t.type == 'iesire' && c.currency != null)
+                    TextSpan(
+                      text: ' ' + (c.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (t.currency != null)
+                    TextSpan(
+                      text: ' ' + (t.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        if (t.type == 'intrare' && t.penalizedPrice != null)
+          Container(
+            margin: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: kGrey,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  const TextSpan(text: 'Pret penalizat: '),
+                  TextSpan(
+                    text: t.penalizedPrice != null
+                        ? numberFormat.format(t.penalizedPrice ?? 0)
+                        : '-',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  if (t.currency != null)
+                    TextSpan(
+                      text: ' ' + (t.currency ?? ''),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        if (t.type == 'intrare')
+          Container(
+            margin: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5,
+              horizontal: 10,
+            ),
+            decoration: const BoxDecoration(
+              color: kGrey,
+              borderRadius: BorderRadius.all(
+                Radius.circular(5),
+              ),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+                children: <TextSpan>[
+                  if (params['humidity'] != null) const TextSpan(text: 'U '),
+                  if (t.humidity != null)
+                    TextSpan(
+                      text: t.humidity.toStringAsFixed(2) + '%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (params['humidity'] != null)
+                    const TextSpan(
+                      text: '-',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (params['foreignObjects'] != null)
+                    const TextSpan(text: ' | CS '),
+                  if (t.foreignObjects != null)
+                    TextSpan(
+                      text: t.foreignObjects.toStringAsFixed(2) + '%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (params['foreignObjects'] != null)
+                    const TextSpan(
+                      text: '-',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (params['hectolitre'] != null)
+                    const TextSpan(text: ' | H '),
+                  if (t.hectolitre != null)
+                    TextSpan(
+                      text: t.hectolitre.toStringAsFixed(2) + '%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else if (params['hectolitre'] != null)
+                    const TextSpan(
+                      text: '-',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                 ],
               ),
             ),

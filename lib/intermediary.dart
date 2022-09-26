@@ -13,7 +13,7 @@ class Intermediary extends StatefulWidget {
 }
 
 class _IntermediaryState extends State<Intermediary> {
-  bool canSee = true;
+  bool canSee = false;
 
   void changeBool() {
     setState(() {

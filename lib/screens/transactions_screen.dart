@@ -576,7 +576,7 @@ class ClientOptions extends StatelessWidget {
                   if (params['humidity'] != null) const TextSpan(text: 'U '),
                   if (t.humidity != null)
                     TextSpan(
-                      text: t.humidity.toStringAsFixed(0) + '%',
+                      text: t.humidity.toStringAsFixed(2) + '%',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -594,7 +594,7 @@ class ClientOptions extends StatelessWidget {
                     const TextSpan(text: ' | CS '),
                   if (t.foreignObjects != null)
                     TextSpan(
-                      text: t.foreignObjects.toStringAsFixed(0) + '%',
+                      text: t.foreignObjects.toStringAsFixed(2) + '%',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -612,7 +612,7 @@ class ClientOptions extends StatelessWidget {
                     const TextSpan(text: ' | H '),
                   if (t.hectolitre != null)
                     TextSpan(
-                      text: t.hectolitre.toStringAsFixed(0) + '%',
+                      text: t.hectolitre.toStringAsFixed(2) + '%',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

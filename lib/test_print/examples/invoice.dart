@@ -58,7 +58,7 @@ pw.Widget buildHeader(Furnizor furnizor, String date) => pw.Column(
                 children: [
                   pw.Text('Cumparator: '),
                   pw.Text('SC Alremca Agro SRL', maxLines: 2),
-                  pw.Text('RO xxx', maxLines: 2),
+                  pw.Text('RO 34028065', maxLines: 2),
                 ],
               ),
             ),
@@ -92,7 +92,7 @@ pw.Widget buildHeader(Furnizor furnizor, String date) => pw.Column(
 
 pw.Widget buildInvoice(List<MyTransaction> transactions) {
   final headers = [
-    'Nr. Crt.',
+    'Nr. Crt',
     'Data Receptie',
     'Cantitate (tone)',
     'Umiditate',
@@ -105,22 +105,22 @@ pw.Widget buildInvoice(List<MyTransaction> transactions) {
 
   int i = 1;
   final data = transactions.map((e) {
+    final price = e.price ?? 0;
+    final penalizedPrice = e.penalizedPrice ?? price;
+    final finalPrice = penalizedPrice * (e.quantity ?? 0);
+
     return [
       (i++).toStringAsFixed(0),
       e.date ?? '-',
       e.quantity,
-      e.humidity != null ? (e.humidity.toStringAsFixed(0) + '%') : '-',
+      e.humidity != null ? (e.humidity.toStringAsFixed(2) + '%') : '-',
       e.foreignObjects != null
-          ? (e.foreignObjects.toStringAsFixed(0) + '%')
+          ? (e.foreignObjects.toStringAsFixed(2) + '%')
           : '-',
-      e.hectolitre != null ? (e.hectolitre.toStringAsFixed(0) + '%') : '-',
-      e.price != null ? numberFormat.format(e.price) : '-',
-      e.penalizedPrice != null
-          ? numberFormat.format(e.penalizedPrice)
-          : (e.price != null ? numberFormat.format(e.price) : '-'),
-      e.penalizedPrice != null
-          ? numberFormat.format(e.penalizedPrice)
-          : (e.price != null ? numberFormat.format(e.price) : '-'),
+      e.hectolitre != null ? (e.hectolitre.toStringAsFixed(2) + '%') : '-',
+      numberFormat.format(price),
+      numberFormat.format(penalizedPrice),
+      numberFormat.format(finalPrice),
     ];
   }).toList();
 
@@ -132,7 +132,7 @@ pw.Widget buildInvoice(List<MyTransaction> transactions) {
     headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
     cellHeight: 30,
     columnWidths: const {
-      0: pw.FlexColumnWidth(2),
+      0: pw.FlexColumnWidth(1),
       1: pw.FlexColumnWidth(4),
       2: pw.FlexColumnWidth(3),
       3: pw.FlexColumnWidth(3),
@@ -163,14 +163,14 @@ pw.Widget buildTotal(List<MyTransaction> transactions) {
   // final vatPercent = invoice.items.first.vat;
 
   double sum = 0;
-  transactions.forEach((element) {
-    sum += element.penalizedPrice ?? element.price;
+  transactions.forEach((e) {
+    final price = e.price ?? 0;
+    final penalizedPrice = e.penalizedPrice ?? price;
+    final finalPrice = penalizedPrice * (e.quantity ?? 0);
+    sum += finalPrice;
   });
 
-  const double vatPercent = .19;
   final total = sum;
-  final vat = total * vatPercent;
-  final netTotal = total - vat;
 
   return pw.Container(
     alignment: pw.Alignment.centerRight,
@@ -182,19 +182,9 @@ pw.Widget buildTotal(List<MyTransaction> transactions) {
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+              pw.SizedBox(height: 2 * PdfPageFormat.mm),
               buildText(
-                title: 'Total fara TVA',
-                value: Utils.formatPrice(netTotal),
-                unite: true,
-              ),
-              buildText(
-                title: 'TVA ${vatPercent * 100} %',
-                value: Utils.formatPrice(vat),
-                unite: true,
-              ),
-              pw.Divider(),
-              buildText(
-                title: 'Total cu TVA',
+                title: 'Total',
                 titleStyle: pw.TextStyle(
                   fontSize: 14,
                   fontWeight: pw.FontWeight.bold,
