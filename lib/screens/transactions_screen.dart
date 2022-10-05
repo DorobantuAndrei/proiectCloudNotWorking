@@ -416,6 +416,11 @@ class TransactionTile extends StatelessWidget {
                                         margin: const EdgeInsets.only(left: 10),
                                         child: Text(t.details),
                                       ),
+                                    if (t.carPlate != null && t.carPlate != '')
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 10),
+                                        child: Text(t.carPlate),
+                                      ),
                                   ],
                                 ),
                               ),
@@ -454,6 +459,9 @@ class ClientOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, double> params = cerealeParams[t.productType];
 
+    bool showPenalized =
+        t.type == 'intrare' && from != 'contracts' && t.penalizedPrice != null;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -479,7 +487,11 @@ class ClientOptions extends StatelessWidget {
                   color: Colors.white,
                 ),
                 children: <TextSpan>[
-                  const TextSpan(text: 'Pret: '),
+                  const TextSpan(text: 'Pret'),
+                  if (showPenalized)
+                    const TextSpan(text: ' / Penalizat: ')
+                  else
+                    const TextSpan(text: ': '),
                   TextSpan(
                     text: numberFormat.format(t.price),
                     style: const TextStyle(
@@ -503,44 +515,17 @@ class ClientOptions extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                ],
-              ),
-            ),
-          ),
-        if (t.type == 'intrare' &&
-            from != 'contracts' &&
-            t.penalizedPrice != null)
-          Container(
-            margin: const EdgeInsets.only(right: 20),
-            padding: const EdgeInsets.symmetric(
-              vertical: 5,
-              horizontal: 10,
-            ),
-            decoration: const BoxDecoration(
-              color: kGrey,
-              borderRadius: BorderRadius.all(
-                Radius.circular(5),
-              ),
-            ),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.white,
-                ),
-                children: <TextSpan>[
-                  const TextSpan(text: 'Pret penalizat: '),
-                  TextSpan(
-                    text: t.penalizedPrice != null
-                        ? numberFormat.format(t.penalizedPrice ?? 0)
-                        : '-',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  if (showPenalized)
+                    TextSpan(
+                      text: t.penalizedPrice != null
+                          ? (' / ' + numberFormat.format(t.penalizedPrice ?? 0))
+                          : '-',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  if (t.currency != null)
+                  if (showPenalized && t.currency != null)
                     TextSpan(
                       text: ' ' + (t.currency ?? ''),
                       style: const TextStyle(
@@ -552,6 +537,49 @@ class ClientOptions extends StatelessWidget {
               ),
             ),
           ),
+        // if (showPenalized)
+        //   Container(
+        //     margin: const EdgeInsets.only(right: 20),
+        //     padding: const EdgeInsets.symmetric(
+        //       vertical: 5,
+        //       horizontal: 10,
+        //     ),
+        //     decoration: const BoxDecoration(
+        //       color: kGrey,
+        //       borderRadius: BorderRadius.all(
+        //         Radius.circular(5),
+        //       ),
+        //     ),
+        //     child: RichText(
+        //       text: TextSpan(
+        //         style: const TextStyle(
+        //           fontSize: 14,
+        //           fontWeight: FontWeight.normal,
+        //           color: Colors.white,
+        //         ),
+        //         children: <TextSpan>[
+        //           const TextSpan(text: 'Pret penalizat: '),
+        //           TextSpan(
+        //             text: t.penalizedPrice != null
+        //                 ? numberFormat.format(t.penalizedPrice ?? 0)
+        //                 : '-',
+        //             style: const TextStyle(
+        //               color: Colors.white,
+        //               fontWeight: FontWeight.bold,
+        //             ),
+        //           ),
+        //           if (t.currency != null)
+        //             TextSpan(
+        //               text: ' ' + (t.currency ?? ''),
+        //               style: const TextStyle(
+        //                 color: Colors.white,
+        //                 fontWeight: FontWeight.bold,
+        //               ),
+        //             ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
         if (t.type == 'intrare' && from != 'contracts')
           Container(
             margin: const EdgeInsets.only(right: 20),

@@ -23,6 +23,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
   final currencyController = TextEditingController(text: 'ron');
   final detailsController = TextEditingController();
   final dateController = TextEditingController();
+  final carPlateController = TextEditingController();
 
   final humidityController = TextEditingController();
   final foreignObjectsController = TextEditingController();
@@ -79,6 +80,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                     ? double.parse(hectolitreController.text)
                     : null)
                 : null,
+            carPlate: carPlateController.text,
           ));
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -601,7 +603,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                       ],
                                     ),
                                   ),
-                                if (params['foreignObjects'] != null)
+                                if (params['hectolitre'] != null)
                                   const SizedBox(width: 20),
                                 if (params['hectolitre'] != null)
                                   Expanded(
@@ -1049,59 +1051,146 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                             ),
                           ),
                           // date
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Data tranzactie',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: dateController,
-                            validator: (value) {
-                              return null;
-                            },
-                            keyboardType: TextInputType.text,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: accentColor,
-                              hintText: 'introdu data aici',
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.withOpacity(.75)),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 0.0, horizontal: 20.0),
-                              border: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: primaryColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Data tranzactie',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: dateController,
+                                      validator: (value) {
+                                        return null;
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: accentColor,
+                                        hintText: 'introdu data aici',
+                                        hintStyle: TextStyle(
+                                            color:
+                                                Colors.grey.withOpacity(.75)),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 0.0,
+                                                horizontal: 20.0),
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: secondaryColor,
+                                              width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        errorBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: errorColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: secondaryColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Nr. masina',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: carPlateController,
+                                      validator: (value) {
+                                        return null;
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: accentColor,
+                                        hintText: 'introdu nr masinii aici',
+                                        hintStyle: TextStyle(
+                                            color:
+                                                Colors.grey.withOpacity(.75)),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 0.0,
+                                                horizontal: 20.0),
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: secondaryColor,
+                                              width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        errorBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: errorColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              errorBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: errorColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                              ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: primaryColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                              ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
@@ -1168,6 +1257,7 @@ Future<void> modifyTransaction(
           transaction.price != null ? (transaction.currency ?? 'ron') : 'ron');
   final detailsController = TextEditingController(text: transaction.details);
   final dateController = TextEditingController(text: transaction.date);
+  final carPlateController = TextEditingController(text: transaction.carPlate);
 
   final humidityController = TextEditingController(
       text: transaction.humidity != null
@@ -1249,6 +1339,7 @@ Future<void> modifyTransaction(
                       ? double.parse(hectolitreController.text)
                       : null)
                   : null,
+              carPlate: carPlateController.text,
             ),
             oldQuantity,
             oldType,
@@ -2224,59 +2315,146 @@ Future<void> modifyTransaction(
                             ),
                           ),
                           // date
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Data tranzactie',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: dateController,
-                            validator: (value) {
-                              return null;
-                            },
-                            keyboardType: TextInputType.text,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: accentColor,
-                              hintText: 'introdu data aici',
-                              hintStyle: TextStyle(
-                                  color: Colors.grey.withOpacity(.75)),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 0.0, horizontal: 20.0),
-                              border: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: primaryColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Data tranzactie',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: dateController,
+                                      validator: (value) {
+                                        return null;
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: accentColor,
+                                        hintText: 'introdu data aici',
+                                        hintStyle: TextStyle(
+                                            color:
+                                                Colors.grey.withOpacity(.75)),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 0.0,
+                                                horizontal: 20.0),
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: secondaryColor,
+                                              width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        errorBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: errorColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: secondaryColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                flex: 1,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Nr. masina',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextFormField(
+                                      controller: carPlateController,
+                                      validator: (value) {
+                                        return null;
+                                      },
+                                      keyboardType: TextInputType.text,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: accentColor,
+                                        hintText: 'introdu nr masinii aici',
+                                        hintStyle: TextStyle(
+                                            color:
+                                                Colors.grey.withOpacity(.75)),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 0.0,
+                                                horizontal: 20.0),
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: secondaryColor,
+                                              width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        errorBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: errorColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: primaryColor, width: 1.0),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              errorBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: errorColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                              ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: primaryColor, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0)),
-                              ),
-                            ),
+                            ],
                           ),
                         ],
                       ),

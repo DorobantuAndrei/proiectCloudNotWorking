@@ -141,6 +141,7 @@ class MyTransaction {
   String details;
 
   String date;
+  String carPlate;
 
   bool selectedForPrint = false;
 
@@ -160,5 +161,6 @@ class MyTransaction {
     this.hectolitre,
     this.details,
     this.date,
+    this.carPlate,
   });
 }

@@ -122,6 +122,7 @@ class LoadTransactions with ChangeNotifier {
               humidity: transactionData['humidity'],
               foreignObjects: transactionData['foreignObjects'],
               hectolitre: transactionData['hectolitre'],
+              carPlate: transactionData['carPlate'],
             ));
           } catch (e) {
             print(e);
@@ -161,6 +162,7 @@ class LoadTransactions with ChangeNotifier {
           'humidity': t.humidity,
           'foreignObjects': t.foreignObjects,
           'hectolitre': t.hectolitre,
+          'carPlate': t.carPlate,
         }));
     var extractedData = json.decode(response.body) as Map<dynamic, dynamic>;
     t.id = extractedData['name'];
@@ -192,6 +194,7 @@ class LoadTransactions with ChangeNotifier {
           'humidity': t.humidity,
           'foreignObjects': t.foreignObjects,
           'hectolitre': t.hectolitre,
+          'carPlate': t.carPlate,
         }));
 
     if (t.quantity != oldQuantity) {
@@ -255,6 +258,7 @@ class LoadTransactions with ChangeNotifier {
     _transactions.firstWhere((e) => e.id == t.id).currency = t.currency;
     _transactions.firstWhere((e) => e.id == t.id).details = t.details;
     _transactions.firstWhere((e) => e.id == t.id).date = t.date;
+    _transactions.firstWhere((e) => e.id == t.id).carPlate = t.carPlate;
 
     _transactions.firstWhere((e) => e.id == t.id).humidity =
         (t.type == 'intrare' && params['humidity'] != null) ? t.humidity : null;

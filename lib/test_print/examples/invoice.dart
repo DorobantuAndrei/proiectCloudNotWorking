@@ -16,7 +16,6 @@
 
 import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -25,7 +24,8 @@ import 'package:printing/printing.dart';
 import '../../constants.dart';
 import '../../models/models.dart';
 import '../../utils.dart';
-// import '../data.dart';
+
+Map<String, bool> currenciesMap = {};
 
 pw.PageTheme _buildTheme(
     PdfPageFormat pageFormat, pw.Font base, pw.Font bold, pw.Font italic) {
@@ -56,44 +56,76 @@ pw.Widget buildHeader(Furnizor furnizor, String date) => pw.Column(
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Cumparator: '),
-                  pw.Text('SC Alremca Agro SRL', maxLines: 2),
-                  pw.Text('RO 34028065', maxLines: 2),
+                  pw.Text(
+                    'Cumparator: ',
+                    style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold, fontSize: 12),
+                  ),
+                  pw.Text(
+                    'SC Alremca Agro SRL',
+                    maxLines: 2,
+                    style: const pw.TextStyle(fontSize: 12),
+                  ),
+                  pw.Text(
+                    'RO 34028065',
+                    maxLines: 2,
+                    style: const pw.TextStyle(fontSize: 12),
+                  ),
                 ],
               ),
             ),
             pw.Expanded(
               flex: 1,
               child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Text('Calculatie emisa: '),
-                  pw.Text(date, maxLines: 2),
+                  pw.Text(
+                    'Calculatie emisa: ',
+                    style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold, fontSize: 12),
+                  ),
+                  pw.Text(
+                    date,
+                    maxLines: 2,
+                    style: const pw.TextStyle(fontSize: 12),
+                  ),
                 ],
               ),
             ),
             pw.Expanded(
               flex: 1,
               child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
-                  pw.Text('Pentru: '),
-                  pw.Text(furnizor.name, maxLines: 2),
-                  pw.Text(furnizor.identifier, maxLines: 2),
+                  pw.Text(
+                    'Pentru: ',
+                    style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold, fontSize: 12),
+                  ),
+                  pw.Text(
+                    furnizor.name,
+                    maxLines: 2,
+                    style: const pw.TextStyle(fontSize: 12),
+                  ),
+                  pw.Text(
+                    furnizor.identifier,
+                    maxLines: 2,
+                    style: const pw.TextStyle(fontSize: 12),
+                  ),
                 ],
               ),
             ),
           ],
         ),
         pw.Divider(),
-        pw.SizedBox(height: 1 * PdfPageFormat.cm),
       ],
     );
 
 pw.Widget buildInvoice(List<MyTransaction> transactions) {
   final headers = [
-    'Nr. Crt',
+    'Nr',
     'Data Receptie',
+    'Nr masina',
     'Cantitate (tone)',
     'Umiditate',
     'Corpuri straine',
@@ -103,16 +135,25 @@ pw.Widget buildInvoice(List<MyTransaction> transactions) {
     'Valoare totala',
   ];
 
+  currenciesMap = {};
+
   int i = 1;
   final data = transactions.map((e) {
     final price = e.price ?? 0;
     final penalizedPrice = e.penalizedPrice ?? price;
     final finalPrice = penalizedPrice * (e.quantity ?? 0);
 
+    if (e.currency != null && e.currency != '') {
+      currenciesMap[e.currency] = true;
+    } else {
+      currenciesMap['fara'] = true;
+    }
+
     return [
       (i++).toStringAsFixed(0),
       e.date ?? '-',
-      e.quantity,
+      e.carPlate ?? '-',
+      e.quantity ?? '-',
       e.humidity != null ? (e.humidity.toStringAsFixed(2) + '%') : '-',
       e.foreignObjects != null
           ? (e.foreignObjects.toStringAsFixed(2) + '%')
@@ -120,7 +161,7 @@ pw.Widget buildInvoice(List<MyTransaction> transactions) {
       e.hectolitre != null ? (e.hectolitre.toStringAsFixed(2) + '%') : '-',
       numberFormat.format(price),
       numberFormat.format(penalizedPrice),
-      numberFormat.format(finalPrice),
+      numberFormat.format(finalPrice) + ' ' + (e.currency ?? '-'),
     ];
   }).toList();
 
@@ -128,49 +169,81 @@ pw.Widget buildInvoice(List<MyTransaction> transactions) {
     headers: headers,
     data: data,
     border: null,
-    headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+    // header
+    headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12),
     headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+    // cell
+    cellStyle: const pw.TextStyle(fontSize: 12),
     cellHeight: 30,
+    //
     columnWidths: const {
       0: pw.FlexColumnWidth(1),
       1: pw.FlexColumnWidth(4),
       2: pw.FlexColumnWidth(3),
       3: pw.FlexColumnWidth(3),
       4: pw.FlexColumnWidth(3),
-      5: pw.FlexColumnWidth(3),
+      5: pw.FlexColumnWidth(2),
       6: pw.FlexColumnWidth(3),
       7: pw.FlexColumnWidth(3),
       8: pw.FlexColumnWidth(3),
+      9: pw.FlexColumnWidth(4),
     },
     cellAlignments: {
       0: pw.Alignment.center,
       1: pw.Alignment.centerLeft,
-      2: pw.Alignment.centerRight,
+      2: pw.Alignment.centerLeft,
       3: pw.Alignment.centerRight,
       4: pw.Alignment.centerRight,
       5: pw.Alignment.centerRight,
       6: pw.Alignment.centerRight,
       7: pw.Alignment.centerRight,
       8: pw.Alignment.centerRight,
+      9: pw.Alignment.centerRight,
     },
   );
 }
 
 pw.Widget buildTotal(List<MyTransaction> transactions) {
-  // final netTotal = invoice.items
-  //     .map((item) => item.unitPrice * item.quantity)
-  //     .reduce((item1, item2) => item1 + item2);
-  // final vatPercent = invoice.items.first.vat;
-
-  double sum = 0;
+  double total = 0;
+  double quantity = 0;
   transactions.forEach((e) {
     final price = e.price ?? 0;
     final penalizedPrice = e.penalizedPrice ?? price;
     final finalPrice = penalizedPrice * (e.quantity ?? 0);
-    sum += finalPrice;
+    total += finalPrice;
+    quantity += (e.quantity ?? 0);
   });
 
-  final total = sum;
+  List<dynamic> currrr = [];
+  print('here in currencies map');
+  print(currenciesMap.length);
+  currenciesMap.forEach((key, value) {
+    double totalCurrency = 0;
+    transactions.forEach((e) {
+      if (key == 'fara' && e.currency == null) {
+        final price = e.price ?? 0;
+        final penalizedPrice = e.penalizedPrice ?? price;
+        final finalPrice = penalizedPrice * (e.quantity ?? 0);
+        totalCurrency += finalPrice;
+      } else if (e.currency != null && e.currency != '' && e.currency == key) {
+        final price = e.price ?? 0;
+        final penalizedPrice = e.penalizedPrice ?? price;
+        final finalPrice = penalizedPrice * (e.quantity ?? 0);
+        totalCurrency += finalPrice;
+      }
+    });
+    currrr.add(
+      buildText(
+        title: 'Total valoare:',
+        titleStyle: pw.TextStyle(
+          fontSize: 12,
+          fontWeight: pw.FontWeight.bold,
+        ),
+        value: Utils.formatPrice(totalCurrency) + ' $key',
+        unite: true,
+      ),
+    );
+  });
 
   return pw.Container(
     alignment: pw.Alignment.centerRight,
@@ -184,14 +257,15 @@ pw.Widget buildTotal(List<MyTransaction> transactions) {
             children: [
               pw.SizedBox(height: 2 * PdfPageFormat.mm),
               buildText(
-                title: 'Total',
+                title: 'Total cantitate:',
                 titleStyle: pw.TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: pw.FontWeight.bold,
                 ),
-                value: Utils.formatPrice(total),
+                value: Utils.formatPrice(quantity) + ' tone',
                 unite: true,
               ),
+              ...currrr,
               pw.SizedBox(height: 2 * PdfPageFormat.mm),
               pw.Container(height: 1, color: PdfColors.grey400),
               pw.SizedBox(height: 0.5 * PdfPageFormat.mm),
@@ -241,6 +315,48 @@ buildText({
   );
 }
 
+String translateDate(String month) {
+  switch (month) {
+    case '1':
+      return 'Ianuarie';
+      break;
+    case '2':
+      return 'Februarie';
+      break;
+    case '3':
+      return 'Martie';
+      break;
+    case '4':
+      return 'Aprilie';
+      break;
+    case '5':
+      return 'Mai';
+      break;
+    case '6':
+      return 'Iunie';
+      break;
+    case '7':
+      return 'Iulie';
+      break;
+    case '8':
+      return 'August';
+      break;
+    case '9':
+      return 'Septembrie';
+      break;
+    case '10':
+      return 'Octombrie';
+      break;
+    case '11':
+      return 'Noiembrie';
+      break;
+    case '12':
+      return 'Decembrie';
+      break;
+    default:
+  }
+}
+
 Future<Uint8List> generateInvoice(
   PdfPageFormat pageFormat,
   List<MyTransaction> transactions,
@@ -253,8 +369,12 @@ Future<Uint8List> generateInvoice(
   // _bgShape = await rootBundle.loadString('assets/invoice.svg');
 
   final now = DateTime.now();
-  final formatter = DateFormat('dd MMMM yyyy');
-  final String formattedDate = formatter.format(now);
+  final day = now.day;
+  final month = translateDate(now.month.toStringAsFixed(0));
+  final year = now.year;
+  // final formatter = DateFormat('dd MMMM yyyy');
+  // final String formattedDate = formatter.format(now);
+  final String formattedDate = '$day $month $year';
 
   // Add page to the PDF
   doc.addPage(
@@ -268,9 +388,9 @@ Future<Uint8List> generateInvoice(
       // header: _buildHeader,
       // footer: _buildFooter,
       build: (context) => [
-        pw.SizedBox(height: 1 * PdfPageFormat.cm),
+        pw.SizedBox(height: 0.25 * PdfPageFormat.cm),
         buildHeader(furnizor, formattedDate),
-        pw.SizedBox(height: 1 * PdfPageFormat.cm),
+        pw.SizedBox(height: 0.75 * PdfPageFormat.cm),
         buildInvoice(transactions),
         pw.Divider(),
         buildTotal(transactions),

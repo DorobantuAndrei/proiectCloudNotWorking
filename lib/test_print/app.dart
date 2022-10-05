@@ -165,7 +165,7 @@ class MyAppState extends State<MyAppTest> with SingleTickerProviderStateMixin {
         ),
       ),
       body: PdfPreview(
-        maxPageWidth: MediaQuery.of(context).size.width * 0.8,
+        maxPageWidth: MediaQuery.of(context).size.width * 0.6,
         build: (format) => examples[_tab].builder(
           format,
           widget.transactions,
