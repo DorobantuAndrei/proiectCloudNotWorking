@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 
 const String kTitle = 'Achizitii cereale';
 const bool kIsWeb = true;
+const bool kCanSee = false;
 
+const String databaseRates = 'rates';
 const String databaseClients = 'clients';
 const String databaseFurnizori = 'furnizori';
 const String databaseTransactions = 'transactions';
@@ -52,7 +54,7 @@ Map<String, Map<String, double>> cerealeParams = {
     'hectolitre': 77.0,
   },
   'porumb': {
-    'humidity': 14.0,
+    'humidity': 14.5,
     'foreignObjects': null,
     'hectolitre': null,
   },
@@ -82,4 +84,11 @@ const List<String> currencies = [
   'ron',
   'usd',
   'eur',
+];
+
+const List<String> rateTypes = [
+  'lunara',
+  'trimestriala',
+  'semestriala',
+  'anuale',
 ];

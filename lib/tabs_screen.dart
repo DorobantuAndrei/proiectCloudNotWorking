@@ -4,6 +4,7 @@ import 'package:achizitii_cereale/providers/furnizoriProvider.dart';
 import 'package:achizitii_cereale/providers/transactionsProvider.dart';
 import 'package:achizitii_cereale/screens/contracts_screen.dart';
 import 'package:achizitii_cereale/screens/furnizori_screen.dart';
+import 'package:achizitii_cereale/screens/rates_screen.dart';
 import 'package:achizitii_cereale/screens/transactions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +31,12 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   void initState() {
     _pages = [
+      {
+        'page': const RatesScreen(),
+        'title': 'Rate Lunare',
+        'bottom': 'Rate lunare',
+        'icon': Icons.attach_money,
+      },
       {
         'page': const ClientScreen(),
         'title': 'Clienti',

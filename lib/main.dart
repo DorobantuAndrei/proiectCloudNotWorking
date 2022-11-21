@@ -1,5 +1,6 @@
 import 'package:achizitii_cereale/intermediary.dart';
 import 'package:achizitii_cereale/providers/furnizoriProvider.dart';
+import 'package:achizitii_cereale/providers/ratesProvider.dart';
 import 'package:achizitii_cereale/providers/transactionsProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => LoadRates()),
         ChangeNotifierProvider(create: (_) => LoadClients()),
         ChangeNotifierProvider(create: (_) => LoadFurnizori()),
         ChangeNotifierProvider(create: (_) => LoadTransactions()),

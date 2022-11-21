@@ -1,3 +1,4 @@
+import 'package:achizitii_cereale/providers/ratesProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
