@@ -23,7 +23,7 @@ class LoadFurnizori with ChangeNotifier {
     List<Furnizor> furnizori = [];
     await FirebaseDatabase.instance
         .ref()
-        .child('furnizori')
+        .child(databaseFurnizori)
         .once()
         .then((value) {
       final extractedData = value.snapshot.value as Map;

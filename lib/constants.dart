@@ -5,11 +5,14 @@ const String kTitle = 'Achizitii cereale';
 const bool kIsWeb = true;
 const bool kCanSee = false;
 
-const String databaseRates = 'rates';
-const String databaseClients = 'clients';
-const String databaseFurnizori = 'furnizori';
-const String databaseTransactions = 'transactions';
-const String databaseStock = 'cereale';
+const bool isTest = false;
+const String isTestDatabase = isTest ? 'Test' : '';
+
+const String databaseRates = 'rates' + isTestDatabase;
+const String databaseClients = 'clients' + isTestDatabase;
+const String databaseFurnizori = 'furnizori' + isTestDatabase;
+const String databaseTransactions = 'transactions' + isTestDatabase;
+const String databaseStock = 'cereale' + isTestDatabase;
 
 const int kSelectedPage = 0;
 

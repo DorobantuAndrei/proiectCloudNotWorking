@@ -426,7 +426,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                         Text(
                                           'Umiditate: ' +
                                               params['humidity']
-                                                  .toStringAsFixed(0) +
+                                                  .toStringAsFixed(1) +
                                               '%',
                                           style: const TextStyle(
                                             fontSize: 14,
@@ -521,7 +521,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                         Text(
                                           'Corpuri straine: ' +
                                               params['foreignObjects']
-                                                  .toStringAsFixed(0) +
+                                                  .toStringAsFixed(1) +
                                               '%',
                                           style: const TextStyle(
                                             fontSize: 14,
@@ -616,9 +616,9 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                       children: [
                                         const SizedBox(height: 8),
                                         Text(
-                                          'Hectolitru: ' +
+                                          'Masa Hectolitrica: ' +
                                               params['hectolitre']
-                                                  .toStringAsFixed(0) +
+                                                  .toStringAsFixed(1) +
                                               '%',
                                           style: const TextStyle(
                                             fontSize: 14,
@@ -633,7 +633,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                             if (params['hectolitre'] != null) {
                                               if (value == null ||
                                                   value.isEmpty) {
-                                                return 'Hectolitru este goala';
+                                                return 'Masa Hectolitrica este goala';
                                               }
                                             }
                                             return null;
@@ -654,7 +654,8 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                           decoration: InputDecoration(
                                             filled: true,
                                             fillColor: accentColor,
-                                            hintText: 'introdu hectolitru aici',
+                                            hintText:
+                                                'introdu Masa Hectolitrica aici',
                                             hintStyle: TextStyle(
                                                 color: Colors.grey
                                                     .withOpacity(.75)),
@@ -880,7 +881,7 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                       Text(
                                         'Pret penalizat: ' +
                                             penalizedPricePercent
-                                                .toStringAsFixed(0) +
+                                                .toStringAsFixed(2) +
                                             '%',
                                         style: const TextStyle(
                                           fontSize: 14,
@@ -1690,7 +1691,7 @@ Future<void> modifyTransaction(
                                         Text(
                                           'Umiditate: ' +
                                               params['humidity']
-                                                  .toStringAsFixed(0) +
+                                                  .toStringAsFixed(1) +
                                               '%',
                                           style: const TextStyle(
                                             fontSize: 14,
@@ -1785,7 +1786,7 @@ Future<void> modifyTransaction(
                                         Text(
                                           'Corpuri straine: ' +
                                               params['foreignObjects']
-                                                  .toStringAsFixed(0) +
+                                                  .toStringAsFixed(1) +
                                               '%',
                                           style: const TextStyle(
                                             fontSize: 14,
@@ -1880,9 +1881,9 @@ Future<void> modifyTransaction(
                                       children: [
                                         const SizedBox(height: 8),
                                         Text(
-                                          'Hectolitru: ' +
+                                          'Masa Hectolitrica: ' +
                                               params['hectolitre']
-                                                  .toStringAsFixed(0) +
+                                                  .toStringAsFixed(1) +
                                               '%',
                                           style: const TextStyle(
                                             fontSize: 14,
@@ -1897,7 +1898,7 @@ Future<void> modifyTransaction(
                                             if (params['hectolitre'] != null) {
                                               if (value == null ||
                                                   value.isEmpty) {
-                                                return 'Hectolitru este goala';
+                                                return 'Masa Hectolitrica este goala';
                                               }
                                             }
                                             return null;
@@ -1918,7 +1919,8 @@ Future<void> modifyTransaction(
                                           decoration: InputDecoration(
                                             filled: true,
                                             fillColor: accentColor,
-                                            hintText: 'introdu hectolitru aici',
+                                            hintText:
+                                                'introdu Masa Hectolitrica aici',
                                             hintStyle: TextStyle(
                                                 color: Colors.grey
                                                     .withOpacity(.75)),
@@ -2144,7 +2146,7 @@ Future<void> modifyTransaction(
                                       Text(
                                         'Pret penalizat: ' +
                                             penalizedPricePercent
-                                                .toStringAsFixed(0) +
+                                                .toStringAsFixed(1) +
                                             '%',
                                         style: const TextStyle(
                                           fontSize: 14,

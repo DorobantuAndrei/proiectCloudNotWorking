@@ -22,7 +22,11 @@ class LoadRates with ChangeNotifier {
   Future<void> getRates() async {
     List<Rate> rates = [];
 
-    await FirebaseDatabase.instance.ref().child('rates').once().then((value) {
+    await FirebaseDatabase.instance
+        .ref()
+        .child(databaseRates)
+        .once()
+        .then((value) {
       final extractedData = value.snapshot.value as Map;
       if (extractedData != null) {
         extractedData.forEach((rateId, rateData) {

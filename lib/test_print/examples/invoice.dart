@@ -129,7 +129,7 @@ pw.Widget buildInvoice(List<MyTransaction> transactions) {
     'Cantitate (tone)',
     'Umiditate',
     'Corpuri straine',
-    'Hectolitru',
+    'Masa Hectolitrica',
     'Pret',
     'Pret final',
     'Valoare totala',

@@ -32,7 +32,11 @@ class LoadClients with ChangeNotifier {
   Future<void> getClients() async {
     List<Client> clients = [];
 
-    await FirebaseDatabase.instance.ref().child('clients').once().then((value) {
+    await FirebaseDatabase.instance
+        .ref()
+        .child(databaseClients)
+        .once()
+        .then((value) {
       final extractedData = value.snapshot.value as Map;
       if (extractedData != null) {
         extractedData.forEach((clientId, clientData) {
