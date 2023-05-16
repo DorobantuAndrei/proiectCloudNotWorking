@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:achizitii_cereale/constants.dart';
 import 'package:achizitii_cereale/getData/firebase_realtime_database.dart';
+import 'package:achizitii_cereale/http_client.dart';
+import 'package:achizitii_cereale/widgets/input_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 
 class Intermediary extends StatefulWidget {
   const Intermediary({Key key}) : super(key: key);
@@ -45,26 +46,15 @@ class PinCodeVerificationScreen extends StatefulWidget {
 }
 
 class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
-  TextEditingController textEditingController = TextEditingController();
-
-  // ignore: close_sinks
-  StreamController<ErrorAnimationType> errorController;
+  TextEditingController telefonController = TextEditingController();
+  TextEditingController codSmsController = TextEditingController();
 
   bool hasError = false;
-  String currentText = "";
   final formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    errorController = StreamController<ErrorAnimationType>();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    errorController.close();
-    super.dispose();
-  }
+  String requestId;
+  bool hasSend = false;
+  bool isOk = false;
 
   // snackBar Widget
   snackBar(String message) {
@@ -74,6 +64,85 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  bool validateForm() {
+    return formKey.currentState.validate();
+  }
+
+  Future<void> submit() async {
+    if (!validateForm()) {
+      return;
+    }
+
+    print('start');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'x-as-apikey': 'a61ef09b-fe42-4a12-ae57-b00bb1f087d9',
+    };
+
+    Map body = {
+      "messageFormat":
+          "Hello, this is your OTP. Please do not share it with anyone",
+      "phoneNumber": telefonController.text,
+      "otpLength": 6,
+      "otpValidityInSeconds": 240,
+    };
+
+    HttpClient client = HttpClient();
+    String serverUrl = 'www.getapistack.com';
+
+    try {
+      Map response = await client.post(
+          Uri.https(serverUrl, '/api/v1/otp/send'), body, headers);
+      setState(() {
+        requestId = response['data']['data']['requestId'];
+        hasSend = true;
+      });
+    } catch (e) {
+      print(e.toString());
+      hasSend = false;
+      requestId = null;
+    }
+  }
+
+  Future<void> submit2() async {
+    if (!validateForm()) {
+      return;
+    }
+
+    print('start 2');
+    print(codSmsController.text ?? 'e cam gol cod sms');
+    print(requestId ?? 'e cam gol request id');
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'x-as-apikey': 'a61ef09b-fe42-4a12-ae57-b00bb1f087d9',
+    };
+
+    Map body = {
+      "otp": codSmsController.text,
+      "requestId": requestId,
+    };
+
+    HttpClient client = HttpClient();
+    String serverUrl = 'www.getapistack.com';
+
+    try {
+      Map response = await client.post(
+          Uri.https(serverUrl, '/api/v1/otp/verify'), body, headers);
+      setState(() {
+        isOk = response['data']['data']['isOtpValid'];
+
+        if (isOk) {
+          widget.change();
+        }
+      });
+    } catch (e) {
+      isOk = false;
+      print(e.toString());
+    }
   }
 
   @override
@@ -91,118 +160,68 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  'Verifica cod pin',
+                  'Verificare nr. telefon',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
+                Text(requestId ?? 'null momentan'),
+                Text(hasSend ? 's-a trimis' : 'nu s-a trimis'),
+                Text(isOk ? 'e ok' : 'nu e ok'),
+                const SizedBox(height: 10),
                 Form(
                   key: formKey,
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: PinCodeTextField(
-                        appContext: context,
-                        pastedTextStyle: TextStyle(
-                          color: Colors.green.shade600,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        length: 6,
-                        // obscureText: true,
-                        // obscuringCharacter: '*',
-                        // blinkWhenObscuring: true,
-                        animationType: AnimationType.fade,
-                        validator: (v) {
-                          if (v.length != 6) {
-                            return 'pin-ul trebuie sa aiba 6 caractere';
-                          } else {
-                            return null;
+                  child: Column(
+                    children: [
+                      InputField(
+                        label: 'Numar telefon',
+                        hint: 'introdu nr telefon',
+                        isRequired: true,
+                        inputController: telefonController,
+                        textInputType: TextInputType.text,
+                        onChangeFunction: () {},
+                        validatorFunction: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'introdu o valoare';
                           }
+                          return null;
                         },
-                        pinTheme: PinTheme(
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(5),
-                          fieldHeight: 50,
-                          fieldWidth: 40,
-                          activeFillColor: Colors.white,
-                          errorBorderColor: Colors.red,
-                          activeColor: kPrimaryColor,
-                          selectedColor: kPrimaryColor,
-                          selectedFillColor: Colors.white,
-                          inactiveFillColor: Colors.white,
-                          inactiveColor: Colors.grey,
+                      ),
+                      if (hasSend) const SizedBox(height: 10),
+                      if (hasSend)
+                        InputField(
+                          label: 'Cod sms',
+                          hint: 'introdu cod sms',
+                          isRequired: true,
+                          inputController: codSmsController,
+                          textInputType: TextInputType.text,
+                          onChangeFunction: () {},
+                          validatorFunction: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'introdu o valoare';
+                            }
+                            return null;
+                          },
                         ),
-                        cursorColor: Colors.black,
-                        animationDuration: const Duration(milliseconds: 300),
-                        enableActiveFill: true,
-                        errorAnimationController: errorController,
-                        controller: textEditingController,
-                        keyboardType: TextInputType.number,
-                        boxShadows: const [
-                          BoxShadow(
-                            offset: Offset(0, 1),
-                            color: Colors.black12,
-                            blurRadius: 10,
-                          )
-                        ],
-                        onCompleted: (v) {
-                          debugPrint("Completed");
-                        },
-                        onChanged: (value) {
-                          debugPrint(value);
-                          setState(() {
-                            currentText = value;
-                          });
-                        },
-                        beforeTextPaste: (text) {
-                          debugPrint("Allowing to paste $text");
-                          //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                          //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                          return true;
-                        },
-                      )),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 25),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    formKey.currentState.validate();
-                    // conditions for validating
-                    if (currentText.length != 6 || currentText != "123321") {
-                      errorController.add(ErrorAnimationType
-                          .shake); // Triggering error shake animation
-                      setState(() => hasError = true);
+                  onPressed: () async {
+                    if (hasSend) {
+                      await submit2();
                     } else {
-                      setState(
-                        () {
-                          hasError = false;
-                        },
-                      );
-                      widget.change();
+                      await submit();
                     }
                   },
                   icon: const Icon(Icons.check, size: 24),
-                  label: const Text('Verifica'),
+                  label: Text(hasSend ? 'Verifica cod SMS' : 'Trimite SMS'),
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(kAccentColor),
                   ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Flexible(
-                      child: TextButton(
-                        child: const Text("Sterge"),
-                        style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(kAccentColor),
-                        ),
-                        onPressed: () {
-                          textEditingController.clear();
-                        },
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),

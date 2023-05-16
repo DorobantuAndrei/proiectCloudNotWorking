@@ -13,6 +13,8 @@ import '../providers/clientsProvider.dart';
 Future<void> addTranzactie(BuildContext context, String productType) async {
   final _formKey = GlobalKey<FormState>();
 
+  print(productType);
+
   // type: isIntrare
   bool isIntrare = true;
   bool isCalculatedManual = false;
@@ -175,10 +177,18 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
         }
       }
       if (params['hectolitre'] != null) {
-        if (double.parse(hectolitreController.text) > params['hectolitre']) {
-          isCalculatedManual = true;
+        if (productType == 'orz') {
+          if (double.parse(hectolitreController.text) < params['hectolitre']) {
+            percent -= ((params['hectolitre'] -
+                    double.parse(hectolitreController.text)) /
+                100);
+          }
         } else {
-          isCalculatedManual = false;
+          if (double.parse(hectolitreController.text) > params['hectolitre']) {
+            isCalculatedManual = true;
+          } else {
+            isCalculatedManual = false;
+          }
         }
       }
       penalizedPriceController.text =
@@ -978,12 +988,14 @@ Future<void> addTranzactie(BuildContext context, String productType) async {
                                                 penalizedPriceController.text =
                                                     '';
                                               } else {
-                                                penalizedPriceController.text =
-                                                    (double.parse(
-                                                                priceController
-                                                                    .text) *
-                                                            1)
-                                                        .toStringAsFixed(2);
+                                                // penalizedPriceController.text =
+                                                //     (double.parse(
+                                                //                 priceController
+                                                //                     .text) *
+                                                //             1)
+                                                //         .toStringAsFixed(2);
+                                                calculatePenalizedPrice();
+                                                setState(() {});
                                               }
                                             }
                                           });
