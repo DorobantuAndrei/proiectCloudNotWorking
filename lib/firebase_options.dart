@@ -21,9 +21,15 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for android - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -47,33 +53,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBfvhYd_2rn8c-AgFj5lQxo7ExD9TFQAIg',
-    appId: '1:835290094074:web:f05861e2891e111ebfec43',
-    messagingSenderId: '835290094074',
-    projectId: 'achizitiicereale-f6819',
-    authDomain: 'achizitiicereale-f6819.firebaseapp.com',
-    databaseURL: 'https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'achizitiicereale-f6819.appspot.com',
-    measurementId: 'G-CYN04EJ52M',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCPVpDg1doSpF4vyNZNjk4MCRO3PRBvz7I',
-    appId: '1:835290094074:android:33ecc354434e2f62bfec43',
-    messagingSenderId: '835290094074',
-    projectId: 'achizitiicereale-f6819',
-    databaseURL: 'https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'achizitiicereale-f6819.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDQkVcv62vDFYTAIyoCxRbfXzlSjjoP--A',
-    appId: '1:835290094074:ios:62bcaabe0d81425dbfec43',
-    messagingSenderId: '835290094074',
-    projectId: 'achizitiicereale-f6819',
-    databaseURL: 'https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'achizitiicereale-f6819.appspot.com',
-    iosClientId: '835290094074-ciotrim2oqifoqirvjdv3gf1oumsejar.apps.googleusercontent.com',
-    iosBundleId: 'ro.fastapp.achizitiiCereale',
+    apiKey: 'AIzaSyCN81nbXG12BNDpPWGgEhlxV31CrwrulH8',
+    appId: '1:1067524828970:web:ba2321c3bd02747254b853',
+    messagingSenderId: '1067524828970',
+    projectId: 'proiectcloud-3d8e9',
+    authDomain: 'proiectcloud-3d8e9.firebaseapp.com',
+    databaseURL: 'https://proiectcloud-3d8e9-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'proiectcloud-3d8e9.appspot.com',
   );
 }

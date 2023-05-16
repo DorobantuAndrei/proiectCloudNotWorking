@@ -99,11 +99,16 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
       setState(() {
         requestId = response['data']['data']['requestId'];
         hasSend = true;
+        hasError = false;
       });
     } catch (e) {
       print(e.toString());
-      hasSend = false;
-      requestId = null;
+      print('hellooo');
+      setState(() {
+        hasSend = false;
+        requestId = null;
+        hasError = true;
+      });
     }
   }
 
@@ -136,17 +141,22 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
         isOk = response['data']['data']['isOtpValid'];
 
         if (isOk) {
+          hasError = false;
           widget.change();
         }
       });
     } catch (e) {
-      isOk = false;
+      setState(() {
+        isOk = false;
+        hasError = true;
+      });
       print(e.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('dasdsadass ' + (hasError ? 'eroare' : 'nu e eroare'));
     return Scaffold(
       backgroundColor: Colors.white,
       body: GestureDetector(
@@ -164,11 +174,11 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 10),
-                Text(requestId ?? 'null momentan'),
-                Text(hasSend ? 's-a trimis' : 'nu s-a trimis'),
-                Text(isOk ? 'e ok' : 'nu e ok'),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
+                // Text(requestId ?? 'null momentan'),
+                // Text(hasSend ? 's-a trimis' : 'nu s-a trimis'),
+                // Text(isOk ? 'e ok' : 'nu e ok'),
+                // const SizedBox(height: 10),
                 Form(
                   key: formKey,
                   child: Column(
@@ -203,6 +213,8 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                             return null;
                           },
                         ),
+                      if (hasError) const SizedBox(height: 10),
+                      if (hasError) Text('Eroare!!!'),
                     ],
                   ),
                 ),

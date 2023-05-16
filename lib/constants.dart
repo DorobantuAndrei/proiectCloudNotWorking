@@ -17,11 +17,8 @@ const String databaseStock = 'cereale' + isTestDatabase;
 const int kSelectedPage = 0;
 
 const String database =
-    'https://achizitiicereale-f6819-default-rtdb.europe-west1.firebasedatabase.app';
+    'https://proiectcloud-3d8e9-default-rtdb.europe-west1.firebasedatabase.app';
 const String databaseFunctions = "";
-
-const String kUrlTerms = 'https://pages.flycricket.io/bella-italia/terms.html';
-const String kApiKey = 'AIzaSyAsvPoOW6q1ucY4BL0DobJd80oAQrclZbA';
 
 NumberFormat numberFormat = NumberFormat("#,##0.00", "ro_RO");
 

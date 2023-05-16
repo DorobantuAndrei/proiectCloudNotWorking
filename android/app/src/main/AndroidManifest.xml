@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ro.fastapp.achizitii_cereale">
+    package="com.example.achizitii_cereale">
    <application
         android:label="achizitii_cereale"
         android:name="${applicationName}"

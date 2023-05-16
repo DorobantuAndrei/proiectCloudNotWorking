@@ -1,4 +1,4 @@
-package ro.fastapp.achizitii_cereale
+package com.example.achizitii_cereale
 
 import io.flutter.embedding.android.FlutterActivity
 
